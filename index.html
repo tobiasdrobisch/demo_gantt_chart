@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Lapse Demo</title>
+	<link rel="stylesheet" href="https://unpkg.com/purecss@2.0.1/build/pure-min.css" integrity="sha384-QkSsJi6SGgWv5LAx1TdvIDRf8TW5Ui4NVKqDDlK1wY2eKioo7wvYIJvGWFQSFE4U" crossorigin="anonymous">
+	<script type="text/javascript" src="lib/d3/d3.v3.min.js"></script> <!-- d3 -->
+	<link type="text/css" href="style.css" rel="stylesheet" />
+	<script type="text/javascript" src="lib/gantt-chart-d3.js"></script>
+	<script type="text/javascript" src="main.js"></script>
+	<script type="text/javascript" src="lib/bits.js"></script> <!--bitArray -->
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.1/spin.min.js'></script> <!--loading spinner -->
+</head>
+<body>
+<h1 align="center"> Lapse Demo</h1>
+<div align="center">
+	<form class="pure-form" onsubmit="return false;">
+		<label for="chooseUseCase">Choose Use Case:</label>
+	<select id="chooseUseCase"></select>
+	Choose Parameters: <input type="text" id="myVal" placeholder="100k-220k">
+	<input type="checkbox" id="initialisingTime" name="initialisingTime" Checked> Initialising Time
+	<button type="submit" id="run_process" class="button-secondary pure-button"  onclick="myFunction()">Run</button>
+</form>
+</div>
+<!-- generate dropdown elements -->
+<script>
+	window.onload = function() {
+		triggerDropdown();
+	};
+	var allUseCases = [
+	{name: "UC1: mf 10kth dP: 100k-220k", file: "mf-rect-100-8x4.10kth-parameter.combined.sorted", defPar:"100k-220k"},
+	{name: "UC2: cmp-4k 1kth dP: 100k-300k", file: "complex-4000-8x4.1kth-parameter.combined.sorted", defPar:"100k-300k"},
+	{name: "UC3: cmp-4k 1kth dP: 100k-110k" , file: "complex-4000-8x4.1kth-parameter.combined.sorted", defPar:"100k-110k"},
+	{name: "useCase4", file: "mf-rect-100-8x4.1kth-parameter.combined.sorted", defPar:"100k-110k"}
+			]
+	var triggerDropdown = function(){
+		//default first Use Case
+		useCase = allUseCases[0];
+		document.getElementById('myVal').value = useCase.defPar;
+		var sel = document.getElementById('chooseUseCase');
+		for (var i = 0; i < allUseCases.length; i++)
+		{
+			var val = allUseCases[i].name;
+
+				var opt = document.createElement('option');
+				opt.innerHTML = val;
+				opt.value = String(i);
+				sel.appendChild(opt);
+		}
+	};
+</script>
+<!-- fill input with default Parameters -->
+<script>
+	let changedText = document.getElementById('myVal');
+	// default Parameters dependent on selected UseCase
+	function listQ(){
+		//console.log("listQ getriggered");
+		useCase = allUseCases[Number(this.value)]
+		changedText.value = useCase.defPar;
+		changedText.placeholder = useCase.defPar;
+	}
+	document.getElementById("chooseUseCase").onchange = listQ;
+</script>
+<script>
+	function enableBtn() {
+		document.getElementById("run_process").disabled = false;
+	}
+</script>
+
+<!-- button "Run" should be really disabled, not working yet -->
+<script>
+	function myFunction() {
+		console.log("vor if abfrage: " + document.getElementById("run_process").disabled);
+		if (document.getElementById("run_process").disabled) {console.log("im if teil: disabled true");} else {
+			document.getElementById("run_process").disabled = true;
+			console.log("else teil: " + document.getElementById("run_process").disabled);
+			document.getElementById("loader").style.display = "block";
+			// removes plotted chart
+			d3.select("svg").remove();
+			main();
+		}
+		return 1;
+	}
+</script>
+<div id="loader" style="display: none;"></div>
+
+</body>
+</html>
+
+<!--
+<script>
+	/** Start process by pressing Enter **/
+			//TODO: find better way doing this
+	var input = document.getElementById("myVal");
+	input.addEventListener("keyup", function(event) {
+		if (event.keyCode === 13) {
+			event.preventDefault();
+			myFunction();
+			//document.getElementById("run_process").click();
+		}
+	});
+</script>
+-->
+
